@@ -12,6 +12,7 @@ async function main(args) {
   let privateKey = null
 
   const secretName = process.env.AWS_SECRET_NAME
+  const surveyName = process.env.SURVEY_NAME
 
   // If we are in production system then MDH configuration will get loaded from the secrets manager.
   if (process.env.NODE_ENV === 'production') {
@@ -45,6 +46,18 @@ async function main(args) {
   if(token == null) {
     return null
   }
+
+  // Create a new pending task for the user before sending out the notification.
+  const taskParams = [
+    {
+      'participantIdentifier': args.pid,
+      'surveyName': surveyName,
+      'dueAfterIntervalAmount': 0,
+      'dueAfterIntervalType': 'Days'
+    }
+  ]
+
+  let taskResults = await mdh.createTask(token, rksProjectId, taskParams);
 
   let results = await sendNotification(token, rksProjectId, args.pid, notificationId)
 

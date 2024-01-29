@@ -114,13 +114,19 @@ function logResponse(response) {
 async function getDeviceData(token, projectId, params) {
   //const participantResourceUrl = `/api/v1/administration/projects/` + rksProjectId + '/participants';
   const resourceUrl = '/api/v1/administration/projects/'+projectId+'/devicedatapoints'
-  return await mdh.getFromApi(token, resourceUrl, params)
+  return await getFromApi(token, resourceUrl, params)
 }
 
 // Method which gets all the participants.
 async function getAllParticipants(token, projectId) {
   const resourceUrl = '/api/v1/administration/projects/'+projectId+'/participants'
-  return await mdh.getFromApi(token, resourceUrl)
+  return await getFromApi(token, resourceUrl)
+}
+
+// Method which will create a new task for the participant.
+async function createTask(token, projectId, params) {
+  const resourceUrl = '/api/v1/administration/projects/'+projectId+'/surveytasks'
+  return await postToApi(token, resourceUrl, params)
 }
 
 exports.getAccessToken = getAccessToken
@@ -128,3 +134,4 @@ exports.getFromApi = getFromApi
 exports.postToApi = postToApi
 exports.getDeviceData = getDeviceData
 exports.getAllParticipants = getAllParticipants
+exports.createTask = createTask
