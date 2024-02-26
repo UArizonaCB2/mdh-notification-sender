@@ -72,7 +72,6 @@ async function sendNotification(token, projectId, pid, nid) {
     {
     'participantIdentifier': pid,
     'notificationIdentifier' : nid,
-    'version' : 0,
     'notificationFields' : {}
     }
   ]
