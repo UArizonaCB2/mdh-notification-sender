@@ -12,14 +12,14 @@ async function main(args) {
   let privateKey = null
 
   const secretName = process.env.AWS_SECRET_NAME
-  const surveyName = process.env.SURVEY_NAME
+  const surveyName = args.sid
 
   // If we are in production system then MDH configuration will get loaded from the secrets manager.
   if (process.env.NODE_ENV === 'production') {
     let secret = await secretManager.getSecret(secretName)
     secret = JSON.parse(secret)
     rksProjectId = secret['RKS_PROJECT_ID']
-    notificationId = secret['NOTIFICATION_ID']
+    notificationId = args.nid
     rksServiceAccount = secret['RKS_SERVICE_ACCOUNT']
     privateKey = secret['RKS_PRIVATE_KEY']
   }
@@ -30,7 +30,7 @@ async function main(args) {
       console.log('Using MDH credentials from environment variables')
       rksServiceAccount = process.env.RKS_SERVICE_ACCOUNT
       rksProjectId = process.env.RKS_PROJECT_ID
-      notificationId = process.env.NOTIFICATION_ID
+      notificationId = args.nid
       privateKey = process.env.RKS_PRIVATE_KEY
     }
     else {
