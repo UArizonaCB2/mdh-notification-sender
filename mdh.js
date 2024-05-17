@@ -60,6 +60,35 @@ async function postToApi(accessToken, resourceUrl, postParams = {}) {
   });
 }
 
+async function putToApi(accessToken, resourceUrl, postParams = {}) {
+  let data = null;
+  let api = axios.create({
+    baseURL: baseApiUri,
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+      "Accept": "application/json",
+      "Content-Type": "application/json; charset=utf-8"
+    }
+  });
+
+  await api.put(resourceUrl, postParams)
+  .then(function (apiResponse) {
+    if (apiResponse.status != '200') {
+      logResponse(apiResponse.data);
+    }
+    else {
+      data = apiResponse.data;
+    }
+  })
+  .catch(function (error) {
+    logResponse(error);
+    return error;
+  });
+  return data;
+}
+
+
+
 async function getAccessToken(rksServiceAccount, privateKey, expires_ms=200) {
   const audienceString = `${baseApiUri}/identityserver/connect/token`;
 
@@ -129,9 +158,18 @@ async function createTask(token, projectId, params) {
   return await postToApi(token, resourceUrl, params)
 }
 
+// Method which updates the participants.
+// The params must contain the participantIdentifier
+function updateParticipant(token, projectId, params) {
+  const resourceUrl = '/api/v1/administration/projects/'+projectId+'/participants'
+  return putToApi(token, resourceUrl, params)
+}
+
 exports.getAccessToken = getAccessToken
 exports.getFromApi = getFromApi
 exports.postToApi = postToApi
 exports.getDeviceData = getDeviceData
 exports.getAllParticipants = getAllParticipants
 exports.createTask = createTask
+exports.putToApi = putToApi
+exports.updateParticipant = updateParticipant

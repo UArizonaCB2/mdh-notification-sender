@@ -57,11 +57,23 @@ async function main(args) {
     }
   ]
 
-  let taskResults = await mdh.createTask(token, rksProjectId, taskParams);
+  // Create a pending task in MDH for the user.
+  const taskResults = await mdh.createTask(token, rksProjectId, taskParams);
+  // Send out the notification to the user.
+  const results = await sendNotification(token, rksProjectId, args.pid, notificationId)
+  // Update the participant custom field with the notification number.
+  const payload = {
+    'participantIdentifier' : args.pid,
+    'customFields' : {
+      'notificationNumber': args.number
+    }
+  }
+  const updateResult = await mdh.updateParticipant(token, rksProjectId, payload)
 
-  let results = await sendNotification(token, rksProjectId, args.pid, notificationId)
+  console.log(args)
 
-  return results
+  /* TODO: Unless we do a read after write check, there is no real good way to figure out if this worked. */
+  return true
 }
 
 
