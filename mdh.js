@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const baseApiUri = 'https://designer.mydatahelps.org';
 
 async function getFromApi(accessToken, resourceUrl, queryParams = {}) {
-  let data = null;
+  var data = null;
   let api = axios.create({
     baseURL: baseApiUri,
     headers: {
@@ -17,20 +17,20 @@ async function getFromApi(accessToken, resourceUrl, queryParams = {}) {
     }
   });
 
-  await api.get(resourceUrl, queryParams)
+  await api.get(resourceUrl, {params: queryParams})
   .then(function (apiResponse) {
     if (apiResponse.status != '200') {
       logResponse(apiResponse.data);
     }
     else {
       data = apiResponse.data;
-      return data;
     }
   })
   .catch(function (error) {
     logResponse(error);
-    return error;
+    return error
   });
+  return data;
 }
 
 async function postToApi(accessToken, resourceUrl, postParams = {}) {
@@ -165,6 +165,21 @@ function updateParticipant(token, projectId, params) {
   return putToApi(token, resourceUrl, params)
 }
 
+// Method which gets all the tasks for a given participant.
+function getSurveyTasks(token, projectId, params) {
+  const resourceUrl = '/api/v1/administration/projects/'+projectId+'/surveytasks'
+  return getFromApi(token, resourceUrl, params)
+}
+
+// Method which closes a task.
+function closeTask(token, projectId, taskId) {
+  const resourceUrl = '/api/v1/administration/projects/'+projectId+'/surveytasks/'+taskId
+  const params = {
+    status: 'closed'
+  }
+  return putToApi(token, resourceUrl, params)
+}
+
 exports.getAccessToken = getAccessToken
 exports.getFromApi = getFromApi
 exports.postToApi = postToApi
@@ -173,3 +188,5 @@ exports.getAllParticipants = getAllParticipants
 exports.createTask = createTask
 exports.putToApi = putToApi
 exports.updateParticipant = updateParticipant
+exports.getSurveyTasks = getSurveyTasks
+exports.closeTask = closeTask

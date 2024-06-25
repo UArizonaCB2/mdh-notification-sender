@@ -47,6 +47,26 @@ async function main(args) {
     return null
   }
 
+  /* We need to close any surveys mentioned in env.SURVEY_CLOSE (except the current one)
+   * before creating new tasks or sending them out.
+   * Note - We only look at those surveys in the EMA category to limit the response size. */
+  const surveyParams = {
+    participantIdentifier: args.pid,
+    status: 'incomplete',
+    surveyCategory: process.env.EMA_CATEGORY,
+  }
+
+  const incompleteSurveys = await mdh.getSurveyTasks(token, rksProjectId, surveyParams)
+
+  for (const surveyTask of incompleteSurveys.surveyTasks) {
+    if (surveyTask.surveyName !== args.sid) {
+      await mdh.closeTask(token, rksProjectId, surveyTask.id)
+      console.log("Automatic non-timeout closing of task "+surveyTask.surveyName)
+    }
+  }
+
+  return
+
   // Create a new pending task for the user before sending out the notification.
   const taskParams = [
     {
@@ -69,8 +89,6 @@ async function main(args) {
     }
   }
   const updateResult = await mdh.updateParticipant(token, rksProjectId, payload)
-
-  console.log(args)
 
   /* TODO: Unless we do a read after write check, there is no real good way to figure out if this worked. */
   return true

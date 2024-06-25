@@ -2,7 +2,7 @@ import {main} from './main.js'
 
 export const handler = async (event, context) => {
 
-  console.log(new Date()+' - Send notification lambda function called for '+event.pid)
+  console.log(new Date()+' - Send notification lambda function called for '+event.pid, event)
 
   return main(event)
 };
