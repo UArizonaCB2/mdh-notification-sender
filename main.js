@@ -65,8 +65,6 @@ async function main(args) {
     }
   }
 
-  return
-
   // Create a new pending task for the user before sending out the notification.
   const taskParams = [
     {
