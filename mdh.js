@@ -152,6 +152,12 @@ async function getAllParticipants(token, projectId) {
   return await getFromApi(token, resourceUrl)
 }
 
+// Method which retuns a specific participant.
+async function getParticipant(token, projectId, participantId) {
+  const resourceUrl = '/api/v1/administration/projects/'+projectId+'/participants/'+participantId
+  return await getFromApi(token, resourceUrl)
+}
+
 // Method which will create a new task for the participant.
 async function createTask(token, projectId, params) {
   const resourceUrl = '/api/v1/administration/projects/'+projectId+'/surveytasks'
@@ -190,3 +196,4 @@ exports.putToApi = putToApi
 exports.updateParticipant = updateParticipant
 exports.getSurveyTasks = getSurveyTasks
 exports.closeTask = closeTask
+exports.getParticipant = getParticipant

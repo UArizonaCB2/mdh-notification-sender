@@ -39,12 +39,25 @@ async function main(args) {
     }
   }
 
+
+
   // Needed when passing and storing the keys in \n escaped single lines.
   privateKey = privateKey.replace(/\\n/g, '\n')
 
   const token = await mdh.getAccessToken(rksServiceAccount, privateKey)
   if(token == null) {
     return null
+  }
+
+  /* Need to check the kill switch aka the custom field named - "stopEMA.
+   * If the value in this field is "yes" then we stop this, and don't do anything after.*/
+  const participantInfo = await mdh.getParticipant(token, rksProjectId, args.pid)
+  const stopEMA = getCustomField(participantInfo, 'stopEMA')
+  if (stopEMA === "yes") {
+    console.log("Warning : Kill switch activated for participant "+args.pid+" for EMA surveys")
+    console.log("Warning : Cowardly refusing to do any further processing")
+
+    return true
   }
 
   /* We need to close any surveys mentioned in env.SURVEY_CLOSE (except the current one)
@@ -92,6 +105,19 @@ async function main(args) {
   return true
 }
 
+/*
+ * Get the specified custom field from the participant.
+ * @param {object} participant - MDH participant object.
+ * @param {string} fieldName - Name of the custom field.
+ * @returns {string} value of the custom field if found, null otherwise.
+ */
+function getCustomField(participant, fieldName) {
+  if (fieldName in participant.customFields) {
+    return participant.customFields[fieldName]
+  }
+
+  return null
+}
 
 // Method which sends a simple notification.
 async function sendNotification(token, projectId, pid, nid) {
